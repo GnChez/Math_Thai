@@ -21,7 +21,7 @@ const corsOptions = {
 const app = express();
 const server = https.createServer({cert: fs.readFileSync('cert.crt'),key: fs.readFileSync('key.key')},app);
 const port = process.env.PORT || 3450;
-const SERVER_URL = process.env.SERVER || "https://math-thai.dam.inspedralbes.cat" //"http://localhost" ;
+const SERVER_URL = process.env.SERVER || "http://localhost"; //"https://math-thai.dam.inspedralbes.cat"
 
 const { getDocument, getCategorias, getPreguntas, getPregunta, insertInCollection, findRegisteredResult, findRegisteredResults, findRegisteredHistory, updateCollection, findRegisteredBattles, getActivities, getPreguntaRandom } = require("./mongoDB.js");
 const { requireLogin, shuffleArray, checkQuestion, generarPassword, obtenerFechaYHoraActual } = require("./utils.js");
@@ -37,7 +37,7 @@ app.use(express.json())
 
 
 server.listen(port, () => {
-    console.log(`Server listening at ${SERVER_URL}:${port}`);
+  console.log(`Servidor ejecutándose en el puerto ${port}`);
 });
 
 app.get('/getPreguntaRandom', async (req, res) => {
