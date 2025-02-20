@@ -4,7 +4,7 @@ module.exports = { getDocument, getPreguntas, getPregunta, insertInCollection, f
 const { MongoClient } = require("mongodb");
 
 // Replace the following with your Atlas connection string                                                                                                                                        
-const url = `mongodb+srv://${user}:${password}@cluster0.uiii7nf.mongodb.net/`;
+const url = `mongodb+srv://goshalizard:RQaLbnDK0BTAKDhg@cluster0.a7ta7.mongodb.net/`;
 
 // Database Name
 const dbName = 'mathGameMongo';
