@@ -86,7 +86,7 @@ INSERT INTO classrooms (id, professor_id, name, access_code) VALUES
 (1, 1, 'Aula Alpha', 'TEST01');
 
 INSERT INTO users (id, name, surname, email, contrasena, rank, lvl, image, id_classroom) VALUES
-(1, 'Anna', 'Alumne', 'alumne@test.cat', 'alumne123', 'apprenent', 1, 'default.png', 1),
+(1, 'Anna', 'Alumne', 'alumne@test.cat', 'alumne123', 'apprenent', 1, NULL, 1),
 (2, 'Pere', 'Senseaula', 'pere@test.cat', 'pere123', 'apprenent', 1, NULL, NULL);
 
 -- Reset autoincrement por si se insertan filas con id fijo
