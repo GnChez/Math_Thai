@@ -1,18 +1,15 @@
-const user = "a22osczapmar";
-const password = "Nitrome7.";
+require('dotenv').config();
 module.exports = { getDocument, getPreguntas, getPregunta, insertInCollection, findRegisteredResult, updateCollection, findRegisteredHistory, findRegisteredResults, getCategorias, getActivities, findRegisteredBattles, getPreguntaRandom };
 const { MongoClient } = require("mongodb");
 
-// Replace the following with your Atlas connection string                                                                                                                                        
-const url = `mongodb+srv://goshalizard:RQaLbnDK0BTAKDhg@cluster0.a7ta7.mongodb.net/`;
+// Local (Docker): mongodb://127.0.0.1:27017  |  Atlas: mongodb+srv://user:pass@cluster.../  en .env como MONGODB_URI
+const url = process.env.MONGODB_URI || "mongodb://127.0.0.1:27017";
+const dbName = process.env.MONGO_DB_NAME || "mathGameMongo";
 
-// Database Name
-const dbName = 'mathGameMongo';
-
-// Create a new MongoClient
 const client = new MongoClient(url);
-// Connect to the Atlas cluster
-client.connect();
+client.connect().catch((err) => {
+    console.error("MongoDB: no se pudo conectar. ¿Está Mongo en marcha? URI:", url.replace(/\/\/([^:]+):([^@]+)@/, "//$1:****@"), err.message);
+});
 
 async function getDocument(id) {
     try {

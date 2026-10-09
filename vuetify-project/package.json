@@ -8,6 +8,7 @@
 
   "scripts": {
     "dev": "vite",
+    "dev:demo": "vite --mode demo",
     "build": "vite build",
     "start": "electron-forge start",
     "preview": "vite preview",

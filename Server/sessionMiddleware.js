@@ -1,17 +1,21 @@
 const session = require('express-session');
 require('dotenv').config();
+const cookie = {
+    secure: process.env.COOKIE_SECURE === 'true',
+    httpOnly: true,
+    path: '/',
+    maxAge: 3600000,
+    sameSite: process.env.COOKIE_SAMESITE || 'lax',
+};
+if (process.env.COOKIE_DOMAIN) {
+    cookie.domain = process.env.COOKIE_DOMAIN;
+}
+
 const sessionMiddleware = session({
     secret: 'mySecretKey',
     resave: true,
-    name: "mathGame",
+    name: 'mathGame',
     saveUninitialized: true,
-    cookie: {
-        secure: false,
-        httpOnly: true,
-        domain: process.env.DOMAIN || "math-thai.dam.inspedralbes.cat", //"localhost"
-        path: "/",
-        maxAge: 3600000,
-        sameSite: 'lax'
-    }
+    cookie,
 });
 module.exports = sessionMiddleware;

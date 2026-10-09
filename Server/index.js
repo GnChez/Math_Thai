@@ -10,23 +10,61 @@ const mysqlConnection = require('./mySQL.js');
 const { v4: uuidv4 } = require('uuid');
 const { spawn } = require('child_process');
 const https = require('https');
+const corsOrigins = [
+    ...new Set(
+        [
+            'http://localhost:3000',
+            'http://127.0.0.1:3000',
+            'https://localhost:3000',
+            'https://127.0.0.1:3000',
+            'https://math-thai.dam.inspedralbes.cat',
+            'http://math-thai.dam.inspedralbes.cat',
+            ...(process.env.CORS_ORIGINS || '')
+                .split(',')
+                .map((s) => s.trim())
+                .filter(Boolean),
+        ].filter(Boolean)
+    ),
+];
+
+/** Permite cualquier puerto en localhost (Vite preview, etc.) sin listarlos uno a uno */
+function allowCorsOrigin(origin) {
+    if (!origin) return true;
+    if (corsOrigins.includes(origin)) return true;
+    return /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin);
+}
+
 const corsOptions = {
-    origin: ["http://localhost:3000", "https://math-thai.dam.inspedralbes.cat"],
+    origin(origin, callback) {
+        callback(null, allowCorsOrigin(origin));
+    },
     credentials: true,
-    methods: ['GET', 'POST', 'DELETE'],
+    methods: ['GET', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-Requested-With'],
     exposedHeaders: ['set-cookie', 'ajax-redirect'],
-    preflightContinue: true,
-    optionsSuccessStatus: 200,
+    optionsSuccessStatus: 204,
 };
 const app = express();
-const server = https.createServer({cert: fs.readFileSync('cert.crt'),key: fs.readFileSync('key.key')},app);
+/** USE_HTTP=true evita TLS local (cert autofirmado → el navegador bloquea fetch con “CORS” y status null) */
+const useHttp = process.env.USE_HTTP === 'true';
+const server = useHttp
+    ? http.createServer(app)
+    : https.createServer({ cert: fs.readFileSync('cert.crt'), key: fs.readFileSync('key.key') }, app);
 const port = process.env.PORT || 3450;
 const SERVER_URL = process.env.SERVER || "http://localhost"; //"https://math-thai.dam.inspedralbes.cat"
 
 const { getDocument, getCategorias, getPreguntas, getPregunta, insertInCollection, findRegisteredResult, findRegisteredResults, findRegisteredHistory, updateCollection, findRegisteredBattles, getActivities, getPreguntaRandom } = require("./mongoDB.js");
 const { requireLogin, shuffleArray, checkQuestion, generarPassword, obtenerFechaYHoraActual } = require("./utils.js");
 const { initializeSocket, filterRooms, getIo } = require("./socket.js");
-initializeSocket(server, { cors: corsOptions });
+initializeSocket(server, {
+    cors: {
+        origin(origin, callback) {
+            callback(null, allowCorsOrigin(origin));
+        },
+        methods: ['GET', 'POST'],
+        credentials: true,
+    },
+});
 const sessionMiddleware = require('./sessionMiddleware.js');
 
 app.use(cors(corsOptions));
@@ -37,7 +75,11 @@ app.use(express.json())
 
 
 server.listen(port, () => {
-  console.log(`Servidor ejecutándose en el puerto ${port}`);
+    const scheme = useHttp ? 'http' : 'https';
+    console.log(`Servidor (${scheme.toUpperCase()}) en ${scheme}://localhost:${port}`);
+    if (!useHttp) {
+        console.log('Si el front falla con “CORS” y status null, suele ser el certificado: en Server/.env pon USE_HTTP=true y usa http en VITE_SERVER_URL.');
+    }
 });
 
 app.get('/getPreguntaRandom', async (req, res) => {

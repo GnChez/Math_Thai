@@ -4,10 +4,10 @@ const mysql = require('mysql2');
 // Configuración del pool de conexiones a la base de datos
 const pool = mysql.createPool({
     connectionLimit: 10, // Número máximo de conexiones en el pool
-    host: 'dam.inspedralbes.cat',
-    user: 'a22osczapmar_Usuario1',
-    password: 'Usuario1',
-    database: 'a22osczapmar_mathGame'
+    host: '127.0.0.1',
+    user: 'mathgame',
+    password: 'mathgame',
+    database: 'mathGame'
 });
 
 // Función para ejecutar consultas SQL utilizando el pool de conexiones

@@ -24,7 +24,7 @@
 <script>
 import { useAppStore } from '@/store/app'
 import { watch, ref } from 'vue'
-import { getAnswerImage } from '@/communicationsManager';
+import { SERVER_URL } from '@/communicationsManager';
 export default {
     name: 'Formato4',
     props: {
@@ -60,9 +60,9 @@ export default {
     },
     methods: {
         getImage(fileName) {
-            
-            const image = `http://math-thai.dam.inspedralbes.cat:3450/imagenPregunta/${fileName}`
-            return image
+            if (!fileName) return '';
+            if (/^(https?:|data:|\/)/.test(fileName)) return fileName;
+            return `${SERVER_URL}/imagenPregunta/${fileName}`;
         },
 
         toggle() {

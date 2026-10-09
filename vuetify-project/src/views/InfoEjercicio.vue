@@ -77,7 +77,10 @@ export default {
     },
     methods: {
         empezarEjercicio() {
-            this.$router.push({ name: 'Ejercicio', params: { id: this.Ejercicio.id } });
+            this.$router.push({
+                name: 'Ejercicio',
+                params: { id: this.Ejercicio.id, categoria: this.$route.params.categoria },
+            });
         }
     },
     created() {

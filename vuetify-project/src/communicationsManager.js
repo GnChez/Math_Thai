@@ -1,6 +1,26 @@
-export const SERVER_URL = "https://math-thai.dam.inspedralbes.cat:3450" //"http://localhost:3450"
+import * as demoApi from './demo/api';
+
+/** VITE_DEMO=true responde en el navegador, sin Express ni bases de datos (despliegue en Vercel). */
+export const DEMO = import.meta.env.VITE_DEMO === 'true';
+
+function demoResponse(data, status = 200) {
+  return {
+    ok: status < 400,
+    status,
+    json: async () => data,
+    text: async () => (typeof data === 'string' ? data : JSON.stringify(data ?? '')),
+  };
+}
+
+/** En dev, por defecto HTTP (junto a USE_HTTP=true en Server) evita certificado autofirmado en https://localhost:3450 */
+export const SERVER_URL =
+  import.meta.env.VITE_SERVER_URL ||
+  (import.meta.env.PROD
+    ? 'https://math-thai.dam.inspedralbes.cat:3450'
+    : 'http://localhost:3450');
 
 export async function descargarImagen(formData) {
+  if (DEMO) return demoApi.descargarImagen();
   const response = await fetch(`${SERVER_URL}/descargar`, {
           method: 'POST',
           mode: 'cors',
@@ -11,6 +31,7 @@ export async function descargarImagen(formData) {
   return imagen;
 }
 export async function joinAula(aula) {
+  if (DEMO) return demoResponse('Registro exitoso');
   return fetch(`${SERVER_URL}/joinAula`,
     {
       method: 'POST',
@@ -24,24 +45,28 @@ export async function joinAula(aula) {
 }
 
 export async function getAula(aulaId) {
+  if (DEMO) return demoApi.getAula(aulaId);
   const response = await fetch(`${SERVER_URL}/getAula/${aulaId}`, { method: 'GET', credentials: 'include', mode: 'cors' });
   const aula = await response.json();
   return aula
 }
 
 export async function getAulaById(aulaId) {
+  if (DEMO) return demoApi.getAulaById(aulaId);
   const response = await fetch(`${SERVER_URL}/getAulaById/${aulaId}`, { method: 'GET', credentials: 'include', mode: 'cors' });
   const aula = await response.json();
   return aula
 }
 
 export async function getEjercicios(id) {
+  if (DEMO) return demoApi.getEjercicio(id);
   const response = await fetch(`${SERVER_URL}/getEjercicio/${id}`, { method: 'GET', credentials: 'include', mode: 'cors' });
   const ejercicios = await response.json();
   return ejercicios;
 }
 
 export async function getRooms(page, itemsPerPage, sortBy, search) {
+  if (DEMO) return demoApi.getRooms(page, itemsPerPage, search);
   const response = await fetch(`${SERVER_URL}/getRooms?page=${page}
   &itemsPerPage=${itemsPerPage}
   &sortBy=${sortBy[0]?.key}
@@ -53,6 +78,7 @@ export async function getRooms(page, itemsPerPage, sortBy, search) {
 }
 
 export async function getExpEjer(datos) {
+  if (DEMO) return demoApi.getExpEjer(datos);
   const response = await fetch(`${SERVER_URL}/getExpEjer`,
     {
       method: 'POST', headers: {
@@ -66,7 +92,10 @@ export async function getExpEjer(datos) {
   return experiencia;
 }
 export async function comprobarRespuesta(respuesta, id) {
+  if (DEMO) return demoApi.comprobarPregunta(id, respuesta);
   console.log("respuesta" + respuesta + "id" + id);
+  console.log(respuesta);
+  
   const response = await fetch(`${SERVER_URL}/comprobarPregunta/${id}`,
     {
       method: 'POST', headers: {
@@ -81,6 +110,7 @@ export async function comprobarRespuesta(respuesta, id) {
 }
 
 export async function updateExperienciaUsuario() {
+  if (DEMO) return demoApi.totalExperiencia();
   const response = await fetch(`${SERVER_URL}/totalExperiencia`,
   { method: 'GET', credentials: 'include', mode: 'cors' });
   const datos = await response.json();
@@ -88,6 +118,7 @@ export async function updateExperienciaUsuario() {
 }
 
 export async function GetTotalesEjercicios() {
+  if (DEMO) return demoApi.getEjercicios();
   const response = await fetch(`${SERVER_URL}/getEjercicios`,
   { method: 'GET', credentials: 'include', mode: 'cors' });
   const datos = await response.json();
@@ -95,6 +126,7 @@ export async function GetTotalesEjercicios() {
 }
 
 export async function GetResueltas(dato) {
+  if (DEMO) return demoApi.getResueltas(dato);
   const response = await fetch(`${SERVER_URL}/getResueltas`,
     {
       method: 'POST', headers: {
@@ -106,7 +138,7 @@ export async function GetResueltas(dato) {
 }
 
 export async function loginGoogle(usuario) {
-
+  if (DEMO) return demoResponse(demoApi.loginGoogle(usuario));
   return fetch(`${SERVER_URL}/loginGoogle`,
     {
       method: 'POST',
@@ -119,7 +151,7 @@ export async function loginGoogle(usuario) {
 
 }
 export async function login(usuario) {
-
+  if (DEMO) return demoResponse(demoApi.login(usuario));
   return fetch(`${SERVER_URL}/login`,
     {
       method: 'POST',
@@ -133,6 +165,7 @@ export async function login(usuario) {
 }
 
 export async function registrarUsuari(infoUsuario) {
+  if (DEMO) return demoApi.registrarUsuari(infoUsuario);
   const response = await fetch(`${SERVER_URL}/registrarUsuari`,
     {
       method: 'POST',
@@ -154,6 +187,7 @@ export async function registrarUsuari(infoUsuario) {
 }
 
 export async function getLogin() {
+  if (DEMO) return demoResponse(demoApi.getLogin());
   return fetch(`${SERVER_URL}/getLogin`, { method: 'GET', credentials: 'include', mode: 'cors' });
 }
 export async function getAvatar(imagen) {
@@ -177,16 +211,22 @@ export async function getAnswerImage(imagen) {
   }
 }
 export async function endSession() {
+  if (DEMO) {
+    demoApi.logout();
+    return demoResponse('');
+  }
   return fetch(`${SERVER_URL}/logout`, { method: 'GET', credentials: 'include', mode: 'cors' });
 }
 
 export async function getCategorias() {
+  if (DEMO) return demoApi.getCategorias();
   const response = await fetch(`${SERVER_URL}/getCategorias`);
   const categorias = await response.json();
   return categorias;
 }
 
 export async function getEjerciciosByCat(nombre) {
+  if (DEMO) return demoApi.getActivities(nombre);
   const response = await fetch(`${SERVER_URL}/getActivities/${nombre}`,
     {
       method: 'GET',
@@ -197,27 +237,30 @@ export async function getEjerciciosByCat(nombre) {
 }
 
 export async function getPreguntaRandom() {
+  if (DEMO) return demoApi.getPreguntaRandom();
   const response = await fetch(`${SERVER_URL}/getPreguntaRandom`);
   const pregunta = await response.json();
   return pregunta;
 }
 
-export async function getPreguntaBatalla(ids) {  
+export async function getPreguntaBatalla(ids) {
+  if (DEMO) return demoApi.getPreguntaBatalla(ids);
   const response = await fetch(`${SERVER_URL}/getpreguntarandom2`, {
     method: 'POST',
     credentials: 'include',
     mode: 'cors',
-    mode: 'cors',body:JSON.stringify(ids),
+    body: JSON.stringify(ids),
     headers: {
       'Content-Type': 'application/json',
-    }
-  })
+    },
+  });
 
   const pregunta = await response.json();
   return pregunta;
 }
 
 export async function getBatallas() {
+  if (DEMO) return demoApi.getBatallas();
   const response = await fetch(`${SERVER_URL}/getbatalla`, {
     method: 'GET',
     credentials: 'include',
@@ -232,6 +275,7 @@ export async function getBatallas() {
 }
 
 export async function historial() {
+  if (DEMO) return demoApi.historial();
   const response = await fetch(`${SERVER_URL}/historial`, {
     method: 'POST',
     credentials: 'include',
@@ -246,6 +290,7 @@ export async function historial() {
 }
 
 export async function PostBatallas(datos) {
+  if (DEMO) return { Estado: 'Todo bien' };
   const response = await fetch(`${SERVER_URL}/guardarbatalla`,
     {
       method: 'POST',
@@ -259,12 +304,16 @@ export async function PostBatallas(datos) {
 
 }
 export async function GetDatosPerfil(datos) {
-  const response = await fetch(`${SERVER_URL}/datosPerfil`,
-    {
-      method: 'POST', headers: {
-        'Content-Type': 'application/json',
-      }, body: JSON.stringify(datos), mode: 'cors'
-    });
+  if (DEMO) return demoApi.datosPerfil(datos);
+  const response = await fetch(`${SERVER_URL}/datosPerfil`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(datos),
+    mode: 'cors',
+    credentials: 'include',
+  });
   const resueltas = await response.json();
   return resueltas;
 }
