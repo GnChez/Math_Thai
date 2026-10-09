@@ -1,4 +1,4 @@
-# Math Thai
+# [Math Thai](https://math-thai.vercel.app/#/)
 
 Math Thai is a game for practising maths, styled as a muay thai fight. A student trains alone, levels up with the experience they earn, and can face another player in a turn-based battle.
 
@@ -38,6 +38,7 @@ Data lives in two databases:
 
 Real battle questions do not come from Mongo. The server runs `ejercicios.py`, which builds a prompt on the fly. Training does read the activities and questions stored in Mongo.
 
+
 ```mermaid
 flowchart LR
   Student[Vue client] -->|HTTP and cookie| API[Express]
@@ -50,3 +51,6 @@ flowchart LR
 ## Demo
 
 A demo mode shows the game without databases or a server. The browser answers with users, a classroom, one exercise that walks through all six formats, and a battle against a bot. That mode does not replace a match between two people: multiplayer still depends on Express and Socket.IO.
+<img width="1932" height="967" alt="imagen" src="https://github.com/user-attachments/assets/11bee13f-b0a6-4c2b-9901-9513bdbbe16a" />
+<img width="1920" height="946" alt="imagen" src="https://github.com/user-attachments/assets/3d2236ff-eebc-4c3f-8245-ea9993367c0e" />
+
